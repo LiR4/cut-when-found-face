@@ -5,9 +5,29 @@ import cv2
 import numpy as np
 import os
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+from deepface import DeepFace
+import os
+from datetime import datetime
+
+start_time = datetime.now()
 
 def cut(video_file, time_start, time_end, count, second):
     ffmpeg_extract_subclip(video_file, time_start, time_end+second, targetname=f"./data/clip/cut{count}.mp4")
+
+def filter_video(file, compare):
+    video = cv2.VideoCapture(file)
+    if(video.isOpened):
+        while True:
+            state, frames = video.read()
+            if(state):
+                cv2.imwrite('./teste/test.jpg', frames)
+                dfs = DeepFace.find(img_path = './teste/test.jpg', db_path = compare, enforce_detection=False)
+                if(len(dfs[0])!=0):
+                    results.append(file)
+                    break
+            else:
+                break
+            
 
 if(os.path.isdir('./data/clip') == False):
     clip = os.path.join('data', 'clip')
@@ -23,6 +43,8 @@ last_time = []
 time_start = 0.0
 time_end = 0.0
 seconds = 3
+path_cut = './data/clip/'
+results = []
 
 while True:
     sucess, img = video.read()
@@ -43,10 +65,24 @@ while True:
 
         time_start = 0.0
         time_end = 0.0
+
     
     # cv2.imshow("teste",img)
     if sucess != True:
         break
 
+
+for file in os.listdir(path_cut):
+    print("--------\n",path_cut+file,"\n--------")
+    filter_video(path_cut+file,"./teste/compare")
+
+# filter_video("./data/clip/cut2.mp4", "./teste/compare")
+
+print(results)
+
 video.release()
 cv2.destroyAllWindows()
+
+end_time = datetime.now()
+
+print('Duration: {}'.format(end_time - start_time))

@@ -186,3 +186,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv
+
+
+.\teste\compare\representations_vgg_face.pkl
